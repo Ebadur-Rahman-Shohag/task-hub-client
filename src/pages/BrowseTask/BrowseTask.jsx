@@ -257,7 +257,7 @@ const BrowseTasks = () => {
 
                                 {/* Action Button */}
                                 <Link
-                                    to={`/task/${task.id}`}
+                                    to={`/task-details/${task.id}`}
                                     className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg font-medium transition-colors inline-flex items-center justify-center"
                                 >
                                     View Details

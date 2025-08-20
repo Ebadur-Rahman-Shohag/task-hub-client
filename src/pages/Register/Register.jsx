@@ -144,12 +144,12 @@ function Register() {
                         </div>
                     </div>
                 </form>
-
+                {/* 
                 <div className="text-center">
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                         Demo: Registration will work with any valid inputs
                     </p>
-                </div>
+                </div> */}
             </div>
         </div>
     );

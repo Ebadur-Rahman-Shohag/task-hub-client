@@ -6,6 +6,7 @@ import BrowseTasks from "../pages/BrowseTask/BrowseTask";
 import MyPostedTasks from "../pages/MyPostedTask/MyPostedTask";
 import Login from "../pages/Login/Login";
 import Register from "../pages/Register/Register";
+import TaskDetails from "../pages/TaskDetails/TaskDetails";
 
 const router = createBrowserRouter([
     {
@@ -15,6 +16,10 @@ const router = createBrowserRouter([
             {
                 index: true,
                 element: <Home />,
+            },
+            {
+                path: "/task-details/:id",
+                element: <TaskDetails />,
             },
             {
                 path: "/add-task",
