@@ -4,7 +4,7 @@ import { Link } from "react-router";
 function Banner() {
     return (
         <>
-            <div className="bg-black carousel w-full min-h-[calc(100vh-160px)]">
+            <div className="bg-black carousel w-full min-h-screen">
                 <div id="slide1" className="carousel-item relative w-full">
                     <div className="w-full h-full flex flex-col justify-center items-center gap-4 text-white">
                         <h1 className="text-5xl font-bold">Post Your Tasks Easily - 1</h1>
