@@ -5,6 +5,7 @@ import AddTask from "../pages/AddTask/AddTask";
 import BrowseTasks from "../pages/BrowseTask/BrowseTask";
 import MyPostedTasks from "../pages/MyPostedTask/MyPostedTask";
 import Login from "../pages/Login/Login";
+import Register from "../pages/Register/Register";
 
 const router = createBrowserRouter([
     {
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
             {
                 path: "/login",
                 element: <Login />,
+            },
+            {
+                path: "/register",
+                element: <Register />,
             },
         ],
     },
