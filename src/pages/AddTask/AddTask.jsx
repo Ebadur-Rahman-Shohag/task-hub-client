@@ -1,22 +1,71 @@
-import React from 'react'
+import React from "react";
+import { useNavigate } from "react-router";
 
 function AddTask() {
+    const navigate = useNavigate();
+    const baseUrl = import.meta.env.VITE_BASE_URL || "http://localhost:8000";
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        const taskData = Object.fromEntries(formData.entries());
+
+        // Map frontend fields to backend model
+        taskData.name = taskData.userName;
+        taskData.email = taskData.userEmail;
+        delete taskData.userName;
+        delete taskData.userEmail;
+
+        // Convert budget to number
+        taskData.budget = Number(taskData.budget);
+        // Ensure deadline is a valid date string
+        taskData.deadline = new Date(taskData.deadline).toISOString();
+
+        console.log("Task Data Submitted:", taskData);
+        fetch(`${baseUrl}/api/v1/tasks`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(taskData),
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then((data) => {
+                console.log("Task created successfully:", data);
+                form.reset(); // Reset the form after submission
+                navigate("/browse-task");
+            })
+            .catch((error) => {
+                console.error("Error creating task:", error);
+            });
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden">
                     <div className="px-6 py-8">
                         <div className="text-center mb-8">
-                            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Post a New Task</h1>
+                            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                                Post a New Task
+                            </h1>
                             <p className="mt-2 text-gray-600 dark:text-gray-400">
                                 Describe your project and connect with talented freelancers
                             </p>
                         </div>
 
-                        <form className="space-y-6">
+                        <form onSubmit={handleSubmit} className="space-y-6">
                             {/* Task Title */}
                             <div>
-                                <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <label
+                                    htmlFor="title"
+                                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                                >
                                     Task Title *
                                 </label>
                                 <input
@@ -31,7 +80,10 @@ function AddTask() {
 
                             {/* Category */}
                             <div>
-                                <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <label
+                                    htmlFor="category"
+                                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                                >
                                     Category *
                                 </label>
                                 <select
@@ -51,7 +103,10 @@ function AddTask() {
 
                             {/* Description */}
                             <div>
-                                <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <label
+                                    htmlFor="description"
+                                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                                >
                                     Description *
                                 </label>
                                 <textarea
@@ -64,7 +119,9 @@ function AddTask() {
                                 />
                                 <div className="mt-1 flex justify-between">
                                     <div></div>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">0/50 minimum</p>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                                        0/50 minimum
+                                    </p>
                                 </div>
                             </div>
 
@@ -72,7 +129,10 @@ function AddTask() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Deadline */}
                                 <div>
-                                    <label htmlFor="deadline" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    <label
+                                        htmlFor="deadline"
+                                        className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                                    >
                                         Deadline *
                                     </label>
                                     <div className="relative">
@@ -91,7 +151,10 @@ function AddTask() {
 
                                 {/* Budget */}
                                 <div>
-                                    <label htmlFor="budget" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    <label
+                                        htmlFor="budget"
+                                        className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                                    >
                                         Budget *
                                     </label>
                                     <div className="relative">
@@ -99,7 +162,7 @@ function AddTask() {
                                             {/* Dollar Icon */}
                                         </div>
                                         <input
-                                            type="text"
+                                            type="number"
                                             id="budget"
                                             name="budget"
                                             required
@@ -114,7 +177,10 @@ function AddTask() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* User Name */}
                                 <div>
-                                    <label htmlFor="userName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    <label
+                                        htmlFor="userName"
+                                        className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                                    >
                                         Your Name
                                     </label>
                                     <div className="relative">
@@ -134,7 +200,10 @@ function AddTask() {
 
                                 {/* User Email */}
                                 <div>
-                                    <label htmlFor="userEmail" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    <label
+                                        htmlFor="userEmail"
+                                        className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                                    >
                                         Your Email
                                     </label>
                                     <div className="relative">
@@ -176,4 +245,4 @@ function AddTask() {
     );
 }
 
-export default AddTask
+export default AddTask;
