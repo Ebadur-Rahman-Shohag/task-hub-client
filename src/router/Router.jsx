@@ -58,7 +58,6 @@ const router = createBrowserRouter([
                         <MyPostedTasks />
                     </ProtectedRoute>
                 ),
-
             },
             {
                 path: "/login",

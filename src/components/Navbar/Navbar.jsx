@@ -39,7 +39,7 @@ function Navbar() {
                             onMouseLeave={() => setShowDropdown(false)}
                         >
                             <div className="w-12 rounded-full">
-                                <img src="https://img.daisyui.com/images/profile/demo/gordon@192.webp" alt="Profile" />
+                                <img src={user.photoURL} alt="Profile" />
                             </div>
                             {showDropdown && (
                                 <div

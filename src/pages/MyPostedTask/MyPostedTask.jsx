@@ -1,56 +1,7 @@
 import { Link } from 'react-router';
-import { FiEdit, FiTrash2, FiEye, FiCalendar, FiDollarSign, FiUsers, FiPlus } from 'react-icons/fi';
-
-const mockUserTasks = [
-    {
-        id: 1,
-        title: "Modern E-commerce Website Development",
-        category: "Web Development",
-        description: "Looking for an experienced developer to build a modern, responsive e-commerce website...",
-        budget: "$1500-$3000",
-        deadline: "2024-03-15",
-        postedDate: "2024-01-20",
-        status: "Active",
-        bidsCount: 24,
-        viewsCount: 156
-    },
-    {
-        id: 2,
-        title: "Mobile App UI/UX Design",
-        category: "Design",
-        description: "Need a complete UI/UX design for a fitness tracking mobile app...",
-        budget: "$1000-$2000",
-        deadline: "2024-03-20",
-        postedDate: "2024-01-25",
-        status: "Active",
-        bidsCount: 15,
-        viewsCount: 89
-    },
-    {
-        id: 3,
-        title: "Content Writing for Tech Blog",
-        category: "Writing",
-        description: "Looking for a skilled content writer to create engaging blog posts...",
-        budget: "$800-$1200",
-        deadline: "2024-02-28",
-        postedDate: "2024-01-18",
-        status: "Completed",
-        bidsCount: 31,
-        viewsCount: 203
-    },
-    {
-        id: 4,
-        title: "Python Data Analysis Script",
-        category: "Web Development",
-        description: "Need a Python script to analyze sales data from CSV files...",
-        budget: "$500-$800",
-        deadline: "2024-02-10",
-        postedDate: "2024-01-15",
-        status: "Expired",
-        bidsCount: 22,
-        viewsCount: 134
-    }
-];
+import { FiEdit, FiTrash2, FiEye, FiCalendar, FiDollarSign, FiUsers, FiPlus, FiLoader } from 'react-icons/fi';
+import { useContext, useEffect, useState } from 'react';
+import AuthContext from '../../contexts/AuthContext/AuthContext';
 
 const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -61,12 +12,12 @@ const formatDate = (dateString) => {
 };
 
 const getStatusColor = (status) => {
-    switch (status) {
-        case 'Active':
+    switch (status?.toLowerCase()) {
+        case 'active':
             return 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200';
-        case 'Completed':
+        case 'completed':
             return 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200';
-        case 'Expired':
+        case 'expired':
             return 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200';
         default:
             return 'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200';
@@ -74,6 +25,69 @@ const getStatusColor = (status) => {
 };
 
 const MyPostedTasks = () => {
+    const { user } = useContext(AuthContext);
+    const [myPostedTasks, setMyPostedTasks] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchMyTasks = async () => {
+            try {
+                setLoading(true);
+                const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/v1/tasks/my-tasks?email=${encodeURIComponent(user.email)}`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('API response:', data);
+                setMyPostedTasks(data.tasks || []);
+            } catch (err) {
+                console.error('Fetch error:', err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (user?.email) {
+            fetchMyTasks();
+        }
+    }, [user?.email]);
+
+    // Calculate stats from actual data
+    const totalTasks = myPostedTasks.length;
+    const activeTasks = myPostedTasks.filter(task => task.status?.toLowerCase() === 'active').length;
+    const totalBids = myPostedTasks.reduce((sum, task) => sum + (task.bidsCount || 0), 0);
+    const totalViews = myPostedTasks.reduce((sum, task) => sum + (task.viewsCount || 0), 0);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-center items-center h-64">
+                        <FiLoader className="animate-spin text-4xl text-blue-600" />
+                        <span className="ml-2 text-lg text-gray-600 dark:text-gray-400">Loading your tasks...</span>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-200 px-4 py-3 rounded">
+                        <strong className="font-bold">Error: </strong>
+                        <span className="block sm:inline">{error}</span>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -103,7 +117,7 @@ const MyPostedTasks = () => {
                             </div>
                             <div className="ml-4">
                                 <p className="text-sm text-gray-600 dark:text-gray-400">Total Tasks</p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-white">{mockUserTasks.length}</p>
+                                <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalTasks}</p>
                             </div>
                         </div>
                     </div>
@@ -115,9 +129,7 @@ const MyPostedTasks = () => {
                             </div>
                             <div className="ml-4">
                                 <p className="text-sm text-gray-600 dark:text-gray-400">Active Tasks</p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                                    {mockUserTasks.filter(task => task.status === 'Active').length}
-                                </p>
+                                <p className="text-2xl font-bold text-gray-900 dark:text-white">{activeTasks}</p>
                             </div>
                         </div>
                     </div>
@@ -129,9 +141,7 @@ const MyPostedTasks = () => {
                             </div>
                             <div className="ml-4">
                                 <p className="text-sm text-gray-600 dark:text-gray-400">Total Bids</p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                                    {mockUserTasks.reduce((sum, task) => sum + task.bidsCount, 0)}
-                                </p>
+                                <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalBids}</p>
                             </div>
                         </div>
                     </div>
@@ -143,16 +153,14 @@ const MyPostedTasks = () => {
                             </div>
                             <div className="ml-4">
                                 <p className="text-sm text-gray-600 dark:text-gray-400">Total Views</p>
-                                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                                    {mockUserTasks.reduce((sum, task) => sum + task.viewsCount, 0)}
-                                </p>
+                                <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalViews}</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Tasks Table */}
-                {mockUserTasks.length === 0 ? (
+                {myPostedTasks.length === 0 ? (
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-12 text-center">
                         <FiUsers className="mx-auto h-12 w-12 text-gray-400 mb-4" />
                         <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No tasks posted yet</h3>
@@ -195,45 +203,45 @@ const MyPostedTasks = () => {
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                    {mockUserTasks.map((task) => (
-                                        <tr key={task.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                    {myPostedTasks.map((task) => (
+                                        <tr key={task._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                                             <td className="px-6 py-4">
                                                 <div>
                                                     <div className="text-sm font-medium text-gray-900 dark:text-white">
                                                         {task.title}
                                                     </div>
                                                     <div className="text-sm text-gray-500 dark:text-gray-400">
-                                                        {task.category} • Posted {formatDate(task.postedDate)}
+                                                        {task.category} • Posted {formatDate(task.createdAt || task.postedDate)}
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex items-center text-sm text-gray-900 dark:text-white">
                                                     <FiDollarSign className="mr-1 text-green-600 dark:text-green-400" />
-                                                    {task.budget}
+                                                    {task.budget || 'Not specified'}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex items-center text-sm text-gray-900 dark:text-white">
                                                     <FiCalendar className="mr-1 text-blue-600 dark:text-blue-400" />
-                                                    {formatDate(task.deadline)}
+                                                    {task.deadline ? formatDate(task.deadline) : 'Not specified'}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(task.status)}`}>
-                                                    {task.status}
+                                                    {task.status || 'Active'}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex items-center text-sm text-gray-900 dark:text-white">
                                                     <FiUsers className="mr-1 text-purple-600 dark:text-purple-400" />
-                                                    {task.bidsCount}
+                                                    {task.bidsCount || 0}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                                 <div className="flex space-x-2">
                                                     <Link
-                                                        to={`/update-task/${task.id}`}
+                                                        to={`/update-task/${task._id}`}
                                                         className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 transition-colors"
                                                         title="Update Task"
                                                     >
@@ -261,14 +269,14 @@ const MyPostedTasks = () => {
 
                         {/* Mobile Cards */}
                         <div className="md:hidden">
-                            {mockUserTasks.map((task) => (
-                                <div key={task.id} className="p-6 border-b dark:border-gray-700 last:border-b-0">
+                            {myPostedTasks.map((task) => (
+                                <div key={task._id} className="p-6 border-b dark:border-gray-700 last:border-b-0">
                                     <div className="flex justify-between items-start mb-3">
                                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                                             {task.title}
                                         </h3>
                                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(task.status)}`}>
-                                            {task.status}
+                                            {task.status || 'Active'}
                                         </span>
                                     </div>
 
@@ -277,25 +285,25 @@ const MyPostedTasks = () => {
                                     <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
                                         <div className="flex items-center text-gray-700 dark:text-gray-300">
                                             <FiDollarSign className="mr-1 text-green-600 dark:text-green-400" />
-                                            {task.budget}
+                                            {task.budget || 'Not specified'}
                                         </div>
                                         <div className="flex items-center text-gray-700 dark:text-gray-300">
                                             <FiCalendar className="mr-1 text-blue-600 dark:text-blue-400" />
-                                            {formatDate(task.deadline)}
+                                            {task.deadline ? formatDate(task.deadline) : 'Not specified'}
                                         </div>
                                         <div className="flex items-center text-gray-700 dark:text-gray-300">
                                             <FiUsers className="mr-1 text-purple-600 dark:text-purple-400" />
-                                            {task.bidsCount} bids
+                                            {task.bidsCount || 0} bids
                                         </div>
                                         <div className="flex items-center text-gray-700 dark:text-gray-300">
                                             <FiEye className="mr-1 text-yellow-600 dark:text-yellow-400" />
-                                            {task.viewsCount} views
+                                            {task.viewsCount || 0} views
                                         </div>
                                     </div>
 
                                     <div className="flex space-x-3">
                                         <Link
-                                            to={`/update-task/${task.id}`}
+                                            to={`/update-task/${task._id}`}
                                             className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-3 rounded text-sm font-medium transition-colors text-center"
                                         >
                                             Update
