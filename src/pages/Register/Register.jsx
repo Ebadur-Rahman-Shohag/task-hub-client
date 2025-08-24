@@ -1,7 +1,48 @@
 import React from "react";
-import { FcGoogle } from 'react-icons/fc';
+import { FcGoogle } from "react-icons/fc";
+import AuthContext from "../../contexts/AuthContext/AuthContext";
+import { useContext } from "react";
+import { useNavigate } from "react-router";
 function Register() {
     const loading = false;
+
+    const { registerUser, googleSignIn } = useContext(AuthContext);
+    console.log(registerUser);
+    const navigate = useNavigate();
+
+    const handleRegister = (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+        const userData = Object.fromEntries(formData.entries());
+
+        const email = userData.email;
+        const password = userData.password;
+        // register user
+        registerUser(email, password)
+            .then((userCredential) => {
+                // Signed up
+                const user = userCredential.user;
+                console.log(user);
+                form.reset();
+                navigate("/login");
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
+    const handleGoogleLogin = () => {
+        googleSignIn()
+            .then((result) => {
+                const user = result.user;
+                console.log(user);
+                navigate("/");
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8">
@@ -20,7 +61,7 @@ function Register() {
                     </p>
                 </div>
 
-                <form className="mt-8 space-y-6">
+                <form onSubmit={handleRegister} className="mt-8 space-y-6">
                     <div className="space-y-4">
                         <div>
                             <label
@@ -134,7 +175,7 @@ function Register() {
                         <div className="mt-6">
                             <button
                                 type="button"
-                                // onClick={handleGoogleLogin}
+                                onClick={handleGoogleLogin}
                                 disabled={loading}
                                 className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-sm font-medium text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
