@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { NavLink } from "react-router";
 import AuthContext from "../../contexts/AuthContext/AuthContext";
+import Swal from 'sweetalert2'
 
 function Navbar() {
     const { user, logoutUser } = useContext(AuthContext);
@@ -9,7 +10,8 @@ function Navbar() {
 
     const handleLogout = () => {
         logoutUser().then(() => {
-            console.log("Logout successful");
+            Swal.fire("User logged out successfully!");
+            setShowDropdown(false);
         }).catch((error) => {
             console.log(error);
         });
@@ -41,7 +43,7 @@ function Navbar() {
                             </div>
                             {showDropdown && (
                                 <div
-                                    className="absolute right-0 mt-4 w-60 bg-[#1E2939] rounded shadow-lg z-10 px-4 flex flex-col items-center"
+                                    className="absolute right-0 mt-4 w-60 bg-[#1E2939] rounded shadow-lg z-10 px-4 "
                                     onMouseEnter={() => setShowDropdown(true)}
                                     onMouseLeave={() => setShowDropdown(false)}
                                 >

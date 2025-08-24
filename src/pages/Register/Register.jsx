@@ -1,11 +1,14 @@
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
+import { FiEye, FiEyeOff, FiMail, FiLock } from "react-icons/fi";
 import AuthContext from "../../contexts/AuthContext/AuthContext";
 import { useContext } from "react";
 import { useNavigate } from "react-router";
+import { useState } from "react";
+import Swal from "sweetalert2";
 function Register() {
+    const [showPassword, setShowPassword] = useState(false);
     const loading = false;
-
     const { registerUser, googleSignIn } = useContext(AuthContext);
     console.log(registerUser);
     const navigate = useNavigate();
@@ -18,6 +21,23 @@ function Register() {
 
         const email = userData.email;
         const password = userData.password;
+        if (password.length < 6) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Password must be at least 6 characters long.",
+            });
+            return;
+        }
+
+        if (!/[A-Z]/.test(password) || !/[a-z]/.test(password)) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Password must have at least one uppercase letter and one lowercase letter.",
+            });
+            return;
+        }
         // register user
         registerUser(email, password)
             .then((userCredential) => {
@@ -25,6 +45,7 @@ function Register() {
                 const user = userCredential.user;
                 console.log(user);
                 form.reset();
+                Swal.fire("User registered successfully!");
                 navigate("/login");
             })
             .catch((error) => {
@@ -139,15 +160,30 @@ function Register() {
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     {/* Icon */}
                                 </div>
-                                <input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    required
-                                    className="appearance-none relative block w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                                    placeholder="Enter your password"
-                                />
-                                {/* Eye Icon Button */}
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <FiLock className="h-5 w-5 text-gray-400" />
+                                    </div>
+                                    <input
+                                        id="password"
+                                        name="password"
+                                        type={showPassword ? "text" : "password"}
+                                        required
+                                        className="appearance-none relative block w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-700 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                                        placeholder="Enter your password"
+                                    />
+                                    <button
+                                        type="button"
+                                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                    >
+                                        {showPassword ? (
+                                            <FiEyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                                        ) : (
+                                            <FiEye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                                        )}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

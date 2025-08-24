@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import AuthContext from "../../contexts/AuthContext/AuthContext";
 import { useContext } from "react";
+import Swal from 'sweetalert2'
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -25,6 +26,7 @@ const Login = () => {
                 const user = userCredential.user;
                 console.log(user);
                 form.reset();
+                Swal.fire("User logged in successfully!");
                 navigate("/");
             })
             .catch((error) => {

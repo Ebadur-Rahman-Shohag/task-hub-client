@@ -8,6 +8,7 @@ import Login from "../pages/Login/Login";
 import Register from "../pages/Register/Register";
 import TaskDetails from "../pages/TaskDetails/TaskDetails";
 import NotFound from "../pages/NotFound/NotFound";
+import ProtectedRoute from "../components/ProtectedRoute/ProtectedRoute";
 
 const baseUrl = import.meta.env.VITE_BASE_URL || "/";
 
@@ -33,7 +34,11 @@ const router = createBrowserRouter([
             },
             {
                 path: "/add-task",
-                element: <AddTask />,
+                element: (
+                    <ProtectedRoute>
+                        <AddTask />
+                    </ProtectedRoute>
+                ),
             },
             {
                 path: "/browse-task",
@@ -48,14 +53,12 @@ const router = createBrowserRouter([
             },
             {
                 path: "/my-posted-task",
-                element: <MyPostedTasks />,
-                loader: async () => {
-                    const response = await fetch(`${baseUrl}/api/v1/tasks/my-tasks`);
-                    if (!response.ok) {
-                        throw new Error("Failed to fetch tasks");
-                    }
-                    return response.json();
-                },
+                element: (
+                    <ProtectedRoute>
+                        <MyPostedTasks />
+                    </ProtectedRoute>
+                ),
+
             },
             {
                 path: "/login",
