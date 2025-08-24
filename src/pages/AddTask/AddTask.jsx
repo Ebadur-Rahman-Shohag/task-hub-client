@@ -1,7 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router";
+import AuthContext from "../../contexts/AuthContext/AuthContext";
+import { useContext } from "react";
 
 function AddTask() {
+    const { user } = useContext(AuthContext);
+    console.log(user);
     const navigate = useNavigate();
     const baseUrl = import.meta.env.VITE_BASE_URL || "http://localhost:8000";
     const handleSubmit = (event) => {
@@ -193,7 +197,7 @@ function AddTask() {
                                             name="userName"
                                             readOnly
                                             className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-gray-50 dark:bg-gray-600 text-gray-900 dark:text-white cursor-not-allowed"
-                                            value="John Doe"
+                                            value={user?.displayName}
                                         />
                                     </div>
                                 </div>
@@ -216,7 +220,7 @@ function AddTask() {
                                             name="userEmail"
                                             readOnly
                                             className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-gray-50 dark:bg-gray-600 text-gray-900 dark:text-white cursor-not-allowed"
-                                            value="john@example.com"
+                                            value={user?.email}
                                         />
                                     </div>
                                 </div>

@@ -9,8 +9,8 @@ import Swal from "sweetalert2";
 function Register() {
     const [showPassword, setShowPassword] = useState(false);
     const loading = false;
-    const { registerUser, googleSignIn } = useContext(AuthContext);
-    console.log(registerUser);
+    const { auth, setUser, registerUser, googleSignIn, updateUserProfile } = useContext(AuthContext);
+    // console.log(registerUser);
     const navigate = useNavigate();
 
     const handleRegister = (e) => {
@@ -21,6 +21,8 @@ function Register() {
 
         const email = userData.email;
         const password = userData.password;
+        const name = userData.name;
+        const photoURL = userData.photoURL;
         if (password.length < 6) {
             Swal.fire({
                 icon: "error",
@@ -43,8 +45,14 @@ function Register() {
             .then((userCredential) => {
                 // Signed up
                 const user = userCredential.user;
-                console.log(user);
+                // console.log(user);
                 form.reset();
+                updateUserProfile(name, photoURL).then(() => {
+                    const user = auth.currentUser;
+                    setUser(...user, user.displayName = name, user.photoURL = photoURL);
+                }).catch((error) => {
+                    console.log(error);
+                });
                 Swal.fire("User registered successfully!");
                 navigate("/login");
             })

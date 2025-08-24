@@ -1,5 +1,5 @@
 import { FiCalendar, FiDollarSign, FiUser, FiClock, FiTag, FiArrowLeft, FiHeart } from 'react-icons/fi';
-import { useLoaderData } from 'react-router';
+import { Link, useLoaderData } from 'react-router';
 
 const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -18,12 +18,12 @@ const TaskDetails = () => {
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Back Button */}
-                <button
+                <Link to={'/browse-task'}
                     className="flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 mb-6 transition-colors"
                 >
                     <FiArrowLeft className="mr-2" />
                     Back to Tasks
-                </button>
+                </Link>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Content */}
