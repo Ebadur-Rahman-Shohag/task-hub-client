@@ -1,7 +1,11 @@
 import React from "react";
 import { Link } from "react-router";
+import AuthContext from "../../contexts/AuthContext/AuthContext";
+import { useContext } from "react";
 
 function Banner() {
+    const { name } = useContext(AuthContext);
+    console.log(name);
     /*
     Grow Your Business_
   Scale your operations with trusted professionals
